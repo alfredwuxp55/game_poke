@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>宝可梦基础游戏</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-image: url('pokemon-bg.jpg');
+      background-size: cover;
+      background-position: center;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      transition: filter 0.3s;
+    }
+    .menu-container, .cards-container {
+      background-color: rgba(255, 255, 255, 0.9);
+      padding: 2rem;
+      border-radius: 1rem;
+      text-align: center;
+      max-width: 90vw;
+      max-height: 90vh;
+      overflow: auto;
+    }
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 1.5rem;
+      color: #333;
+    }
+    button {
+      padding: 0.8rem 2rem;
+      font-size: 1.2rem;
+      border: none;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      background-color: #ffcc00;
+      transition: background-color 0.3s;
+      margin: 0.5rem;
+    }
+    button:hover {
+      background-color: #ffdd33;
+    }
+    #mode-menu, #cards-view {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+    }
+    #settings-btn {
+      position: absolute;
+      top: 1rem;
+      left: 1rem;
+      font-size: 2.5rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      z-index: 1000;
+      color: #222;
+      transition: color 0.3s;
+    }
+    #settings-btn:hover { color: #000; }
+    #settings-menu {
+      position: absolute;
+      top: 3.5rem;
+      left: 1rem;
+      background-color: rgba(255, 255, 255, 0.95);
+      padding: 1rem;
+      border-radius: 0.5rem;
+      display: none;
+      flex-direction: column;
+      align-items: flex-start;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      z-index: 1000;
+    }
+    /* 卡片页面 */
+    .category-tabs {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+    .category-tabs button {
+      margin: 0.3rem 0.6rem;
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      background-color: #ddd;
+      color: #333;
+    }
+    .category-tabs button.active { background-color: #bbb; }
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+    }
+    .card {
+      width: 100px;
+      height: 140px;
+      background-color: #fff;
+      border: 2px solid #333;
+      border-radius: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    #cards-back {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      background-color: #ffcc00;
+    }
+  </style>
+</head>
+<body>
+  <button id="settings-btn">⚙️</button>
+  <div id="settings-menu">
+    <button id="back-main">回到主页面</button>
+    <button id="volume-toggle">音量：开启</button>
+    <div><span>亮度：</span><button id="brightness-high">高</button><button id="brightness-low">低</button></div>
+  </div>
+
+  <div id="main-menu" class="menu-container">
+    <h1>宝可梦世界</h1>
+    <button id="start-button">开始游戏</button>
+  </div>
+
+  <div id="mode-menu" class="menu-container">
+    <h1>选择游戏模式</h1>
+    <div class="mode-options">
+      <button id="classic-battle">经典对战</button>
+      <button id="my-cards">我的卡片</button>
+    </div>
+  </div>
+
+  <div id="cards-view" class="cards-container">
+    <button id="cards-back">返回</button>
+    <h1>我的卡片</h1>
+    <div class="category-tabs">
+      <button data-cat="稀有" class="active">稀有</button>
+      <button data-cat="超稀有">超稀有</button>
+      <button data-cat="史诗">史诗</button>
+      <button data-cat="神话">神话</button>
+      <button data-cat="传奇">传奇</button>
+    </div>
+    <div class="card-grid" id="card-grid"></div>
+  </div>
+
+  <script>
+    const mainMenu = document.getElementById('main-menu');
+    const modeMenu = document.getElementById('mode-menu');
+    const cardsView = document.getElementById('cards-view');
+    const startBtn = document.getElementById('start-button');
+    const classicBtn = document.getElementById('classic-battle');
+    const cardsBtn = document.getElementById('my-cards');
+    const backMainBtn = document.getElementById('back-main');
+    const cardsBackBtn = document.getElementById('cards-back');
+    const categoryTabs = document.querySelectorAll('.category-tabs button');
+    const cardGrid = document.getElementById('card-grid');
+
+    const categories = { '稀有':40, '超稀有':40, '史诗':40, '神话':40, '传奇':40 };
+
+    function showMain() {
+      mainMenu.style.display='flex'; modeMenu.style.display='none'; cardsView.style.display='none';
+    }
+    function showMode() {
+      mainMenu.style.display='none'; modeMenu.style.display='flex'; cardsView.style.display='none';
+    }
+    function showCards() {
+      mainMenu.style.display='none'; modeMenu.style.display='none'; cardsView.style.display='flex';
+      loadCategory('稀有');
+    }
+
+    function loadCategory(cat) {
+      cardGrid.innerHTML='';
+      const count = categories[cat];
+      for(let i=1;i<=count;i++){
+        const card = document.createElement('div');
+        card.className='card';
+        card.textContent=`${cat} #${i}`;
+        cardGrid.appendChild(card);
+      }
+    }
+
+    startBtn.addEventListener('click',showMode);
+    classicBtn.addEventListener('click',()=>alert('进入经典对战模式'));
+    cardsBtn.addEventListener('click',showCards);
+    cardsBackBtn.addEventListener('click',showMode);
+    backMainBtn.addEventListener('click',showMain);
+
+    categoryTabs.forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        categoryTabs.forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        loadCategory(btn.dataset.cat);
+      });
+    });
+
+    // 设置菜单逻辑
+    const settingsBtn = document.getElementById('settings-btn');
+    const settingsMenu = document.getElementById('settings-menu');
+    const volumeToggleBtn = document.getElementById('volume-toggle');
+    const brightnessHighBtn = document.getElementById('brightness-high');
+    const brightnessLowBtn = document.getElementById('brightness-low');
+    let isMuted=false;
+    settingsBtn.addEventListener('click',()=>{
+      settingsMenu.style.display = settingsMenu.style.display==='flex'?'none':'flex';
+    });
+    volumeToggleBtn.addEventListener('click',()=>{
+      isMuted=!isMuted;
+      volumeToggleBtn.textContent=isMuted?'音量：禁音':'音量：开启';
+    });
+    brightnessHighBtn.addEventListener('click',()=>document.body.style.filter='brightness(1)');
+    brightnessLowBtn.addEventListener('click',()=>document.body.style.filter='brightness(0.5)');
+    document.addEventListener('click',e=>{
+      if(!settingsMenu.contains(e.target)&&e.target!==settingsBtn) settingsMenu.style.display='none';
+    });
+  </script>
+</body>
+</html>
