@@ -5,145 +5,69 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>宝可梦基础游戏</title>
   <style>
-    body {
-      margin: 0;
-      padding: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      background-image: url('pokemon-bg.jpg');
-      background-size: cover;
-      background-position: center;
-      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-      transition: filter 0.3s;
-    }
-    .menu-container, .cards-container {
-      background-color: rgba(255, 255, 255, 0.9);
-      padding: 2rem;
-      border-radius: 1rem;
-      text-align: center;
-      max-width: 90vw;
-      max-height: 90vh;
-      overflow: auto;
-    }
-    h1 {
-      font-size: 3rem;
-      margin-bottom: 1.5rem;
-      color: #333;
-    }
-    button {
-      padding: 0.8rem 2rem;
-      font-size: 1.2rem;
-      border: none;
-      border-radius: 0.5rem;
-      cursor: pointer;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      background-color: #ffcc00;
-      transition: background-color 0.3s;
-      margin: 0.5rem;
-    }
-    button:hover {
-      background-color: #ffdd33;
-    }
-    #mode-menu, #cards-view {
-      display: none;
-      flex-direction: column;
-      align-items: center;
-    }
-    #settings-btn {
-      position: absolute;
-      top: 1rem;
-      left: 1rem;
-      font-size: 2.5rem;
-      background: none;
-      border: none;
-      cursor: pointer;
-      z-index: 1000;
-      color: #222;
-      transition: color 0.3s;
-    }
+    body { margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; height: 100vh;
+      background-image: url('pokemon-bg.jpg'); background-size: cover; background-position: center;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; transition: filter 0.3s; }
+    .container { background-color: rgba(255,255,255,0.9); padding: 2rem; border-radius: 1rem;
+      text-align: center; max-width: 90vw; max-height: 90vh; overflow: auto; position: relative; display: none; }
+    .container.active { display: flex; flex-direction: column; align-items: center; }
+    h1 { font-size: 3rem; margin-bottom: 1.5rem; color: #333; }
+    button { padding: 0.8rem 2rem; font-size: 1.2rem; border: none; border-radius: 0.5rem;
+      cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1); background-color: #ffcc00;
+      transition: background-color 0.3s; margin: 0.5rem; }
+    button:hover { background-color: #ffdd33; }
+    #settings-btn { position: absolute; top: 1rem; left: 1rem; font-size: 2.5rem;
+      background: none; border: none; cursor: pointer; z-index: 1000; color: #222; transition: color 0.3s; }
     #settings-btn:hover { color: #000; }
-    #settings-menu {
-      position: absolute;
-      top: 3.5rem;
-      left: 1rem;
-      background-color: rgba(255, 255, 255, 0.95);
-      padding: 1rem;
-      border-radius: 0.5rem;
-      display: none;
-      flex-direction: column;
-      align-items: flex-start;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      z-index: 1000;
-    }
-    /* 卡片页面 */
-    .category-tabs {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      margin-bottom: 1rem;
-    }
-    .category-tabs button {
-      margin: 0.3rem 0.6rem;
-      padding: 0.5rem 1rem;
-      font-size: 1rem;
-      background-color: #ddd;
-      color: #333;
-    }
-    .category-tabs button.active { background-color: #bbb; }
-    .card-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1rem;
-    }
-    .card {
-      width: 100px;
-      height: 140px;
-      background-color: #fff;
-      border: 2px solid #333;
-      border-radius: 0.5rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.8rem;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    #cards-back {
-      position: absolute;
-      top: 1rem;
-      right: 1rem;
-      padding: 0.5rem 1rem;
-      font-size: 1rem;
-      background-color: #ffcc00;
-    }
+    #settings-menu { position: absolute; top: 3.5rem; left: 1rem; background-color: rgba(255,255,255,0.95);
+      padding: 1rem; border-radius: 0.5rem; display: none; flex-direction: column; align-items: flex-start;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1); z-index: 1000; }
+    #coin-display { position: absolute; top: 1rem; right: 1rem; display: flex; align-items: center;
+      background-color: rgba(255,255,255,0.8); padding: 0.5rem 1rem; border-radius: 0.5rem;
+      font-size: 1.2rem; z-index: 1000; }
+    .tabs { display: flex; justify-content: center; flex-wrap: wrap; margin-bottom: 1rem; }
+    .tabs button { margin: 0.3rem 0.6rem; padding: 0.5rem 1rem; font-size: 1rem; background-color: #ddd; color: #333; }
+    .tabs button.active { background-color: #bbb; }
+    .card-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; }
+    .card { width: 100px; height: 140px; background-color: #fff; border:2px solid #333;
+      border-radius:0.5rem; display:flex; flex-direction: column; align-items: center; justify-content: center;
+      font-size:0.8rem; box-shadow:0 2px 4px rgba(0,0,0,0.1); padding: 0.5rem; }
+    .card .status { margin-top: 0.3rem; font-size: 0.7rem; color: #999; }
+    #shop-button { background-color: #4CAF50; color: #fff; }
+    #shop-button:hover { background-color: #66BB6A; }
+    .spinner-container { position: relative; width: 200px; height: 200px; margin: 1rem auto; }
+    .spinner-canvas { border-radius: 50%; display: block; transform-origin: 50% 50%; }
+    .pointer { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      font-size: 2rem; color: red; z-index: 10; }
   </style>
 </head>
 <body>
   <button id="settings-btn">⚙️</button>
   <div id="settings-menu">
-    <button id="back-main">回到主页面</button>
-    <button id="volume-toggle">音量：开启</button>
-    <div><span>亮度：</span><button id="brightness-high">高</button><button id="brightness-low">低</button></div>
+    <button id="back-main">返回主页面</button>
+    <button id="volume-toggle">音量：高</button>
+    <button id="brightness-toggle">亮度：高</button>
   </div>
+  <div id="coin-display">💰 10</div>
 
-  <div id="main-menu" class="menu-container">
+  <div id="main-menu" class="container active">
     <h1>宝可梦世界</h1>
     <button id="start-button">开始游戏</button>
+    <button id="shop-button">进入商店 🛒</button>
   </div>
 
-  <div id="mode-menu" class="menu-container">
+  <div id="mode-menu" class="container">
     <h1>选择游戏模式</h1>
-    <div class="mode-options">
+    <div class="tabs">
       <button id="classic-battle">经典对战</button>
       <button id="my-cards">我的卡片</button>
     </div>
   </div>
 
-  <div id="cards-view" class="cards-container">
+  <div id="cards-view" class="container">
     <button id="cards-back">返回</button>
     <h1>我的卡片</h1>
-    <div class="category-tabs">
+    <div class="tabs">
       <button data-cat="稀有" class="active">稀有</button>
       <button data-cat="超稀有">超稀有</button>
       <button data-cat="史诗">史诗</button>
@@ -153,74 +77,158 @@
     <div class="card-grid" id="card-grid"></div>
   </div>
 
+  <div id="shop-view" class="container">
+    <button id="shop-back">返回</button>
+    <h1>商店</h1>
+    <div class="tabs shop-tabs">
+      <button data-cat="转盘" class="active">转盘</button>
+      <button data-cat="高级转盘">高级转盘</button>
+      <button data-cat="抽卡机">抽卡机</button>
+      <button data-cat="碎片">碎片</button>
+      <button data-cat="物资">物资</button>
+    </div>
+    <div id="shop-content"></div>
+  </div>
+
   <script>
-    const mainMenu = document.getElementById('main-menu');
-    const modeMenu = document.getElementById('mode-menu');
-    const cardsView = document.getElementById('cards-view');
-    const startBtn = document.getElementById('start-button');
-    const classicBtn = document.getElementById('classic-battle');
-    const cardsBtn = document.getElementById('my-cards');
-    const backMainBtn = document.getElementById('back-main');
-    const cardsBackBtn = document.getElementById('cards-back');
-    const categoryTabs = document.querySelectorAll('.category-tabs button');
-    const cardGrid = document.getElementById('card-grid');
-
-    const categories = { '稀有':40, '超稀有':40, '史诗':40, '神话':40, '传奇':40 };
-
-    function showMain() {
-      mainMenu.style.display='flex'; modeMenu.style.display='none'; cardsView.style.display='none';
+    const dpr = window.devicePixelRatio || 1;
+    let coinCount = 10;
+    function updateCoins() {
+      document.getElementById('coin-display').textContent = `💰 ${coinCount}`;
     }
-    function showMode() {
-      mainMenu.style.display='none'; modeMenu.style.display='flex'; cardsView.style.display='none';
-    }
-    function showCards() {
-      mainMenu.style.display='none'; modeMenu.style.display='none'; cardsView.style.display='flex';
-      loadCategory('稀有');
+    function showView(id) {
+      document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      document.getElementById('coin-display').style.display = id === 'main-menu' ? 'flex' : 'none';
+      updateCoins();
     }
 
-    function loadCategory(cat) {
-      cardGrid.innerHTML='';
-      const count = categories[cat];
-      for(let i=1;i<=count;i++){
-        const card = document.createElement('div');
-        card.className='card';
-        card.textContent=`${cat} #${i}`;
-        cardGrid.appendChild(card);
-      }
-    }
+    document.getElementById('back-main').onclick = () => showView('main-menu');
+    document.getElementById('start-button').onclick = () => showView('mode-menu');
+    document.getElementById('classic-battle').onclick = () => alert('进入经典对战模式');
+    document.getElementById('my-cards').onclick = () => showView('cards-view');
+    document.getElementById('cards-back').onclick = () => showView('mode-menu');
 
-    startBtn.addEventListener('click',showMode);
-    classicBtn.addEventListener('click',()=>alert('进入经典对战模式'));
-    cardsBtn.addEventListener('click',showCards);
-    cardsBackBtn.addEventListener('click',showMode);
-    backMainBtn.addEventListener('click',showMain);
+    const cardData = {
+      '稀有': ['皮卡丘','小火龙','妙蛙种子','杰尼龟','跑跑猪','凯罗斯','火恐龙','雷丘','水跃灵','布鲁灵',
+             '喷火龙','乘龙','大锯鳄','班基拉斯','砰头小猪','多边兽','卡比兽','索罗亚克','耿鬼','伊布'],
+      '超稀有': ['暴鲤龙','水君','雷公','凤王','水晶翼龙','超梦','洛奇亚','洁咪拉','烈咬陆鲨','代欧',
+               '梦幻','塞尔凯恩','雪童子','路卡利欧','基格尔德','雷希拉姆','捷拉奥拉','玛机雅娜','祖伊姆','玛纳霏'],
+      '史诗': ['古拉顿','盖欧卡','秃鹰狮','巨金怪','拉帝亚斯','雷希拉姆','杰克罗姆','基格尔德','索尔迦雷欧','露奈雅拉',
+             '玛夏多','塞尔吉欧德','基拉祈','阿尔宙斯','代欧','酋雷姆','拔葱菇','核能恐龙','梦梦','洛托姆'],
+      '神话': ['阿尔宙斯','塞尔凯恩','基格尔德','雪童子','路卡利欧','代欧奇多','梦幻','基拉祈','捷拉奥拉','玛纳霏',
+             '祖伊姆','伊裴尔塔尔','塞壬','涂鴉小匠','巫咸','比克提尼','艾姆利多','酋雷姆','拔葱菇','核能恐龙'],
+      '传奇': ['超梦X','超级闪电鸟','超级火焰鸟','超级水君','太阳伊布','月亮伊布','烈空坐','固拉多','盖欧卡','裂空座',
+             '帝牙卢卡','帕路奇犽','雪拉比','帝牙卢卡','帕路奇犽','基格尔德','凤凰火','三首恶龙','沙奈朵','西狄'],
+    };
 
-    categoryTabs.forEach(btn=>{
-      btn.addEventListener('click',()=>{
-        categoryTabs.forEach(b=>b.classList.remove('active'));
-        btn.classList.add('active');
-        loadCategory(btn.dataset.cat);
+    function loadCards(cat) {
+      const grid = document.getElementById('card-grid');
+      grid.innerHTML = '';
+      (cardData[cat] || []).forEach(name => {
+        const div = document.createElement('div');
+        div.className = 'card';
+        div.innerHTML = `<div>${name}</div><div class="status">未拥有</div>`;
+        grid.appendChild(div);
       });
+    }
+    document.querySelectorAll('#cards-view .tabs button').forEach(btn => {
+      btn.onclick = () => {
+        document.querySelectorAll('#cards-view .tabs button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        loadCards(btn.dataset.cat);
+      };
+    });
+    loadCards('稀有');
+
+    function drawSpinner(id, items) {
+      const canvas = document.getElementById(id), size = 200;
+      canvas.style.width = size + 'px';
+      canvas.style.height = size + 'px';
+      canvas.width  = size * dpr;
+      canvas.height = size * dpr;
+      const ctx = canvas.getContext('2d');
+      ctx.scale(dpr, dpr);
+      const center = size / 2, seg = 2 * Math.PI / items.length;
+      ctx.clearRect(0, 0, size, size);
+      items.forEach((it, i) => {
+        const start = i * seg;
+        ctx.beginPath(); ctx.moveTo(center, center);
+        ctx.arc(center, center, center, start, start + seg);
+        ctx.closePath(); ctx.fillStyle = i % 2 ? '#fde68a' : '#fcd34d';
+        ctx.fill(); ctx.stroke();
+        ctx.fillStyle = '#333';
+        ctx.save(); ctx.translate(center, center); ctx.rotate(start + seg / 2);
+        ctx.textAlign = 'right'; ctx.fillText(it, center - 10, 0);
+        ctx.restore();
+      });
+    }
+
+    function loadShopCategory(cat) {
+      const shopContent = document.getElementById('shop-content'); shopContent.innerHTML = '';
+      if (cat === '转盘') {
+        const items = ['金币','金币','金币','稀有碎片','超稀有碎片','稀有碎片×2'];
+        shopContent.innerHTML = `
+          <p>基础转盘（6格）：<br>
+          • 最多可获20金币<br>
+          • 稀有碎片×1<br>
+          • 超稀有碎片×1<br>
+          • 稀有碎片×2<br>
+          免费一次或10金一次<br>
+          点击开始抽取。
+          </p>
+          <div class="spinner-container">
+            <div class="pointer">🔻</div>
+            <canvas id="basic-spinner" class="spinner-canvas"></canvas>
+          </div>
+          <button id="spin-basic">抽取</button>
+        `;
+        drawSpinner('basic-spinner', items);
+        document.getElementById('spin-basic').onclick = () => {
+          const idx = Math.floor(Math.random() * items.length),
+                segment = 360 / items.length,
+                full = 360 * 3,
+                target = full + idx * segment + segment / 2;
+          const cvs = document.getElementById('basic-spinner');
+          cvs.style.transition = 'transform 3s ease-out';
+          cvs.style.transform = `rotate(${target}deg)`;
+          cvs.addEventListener('transitionend', () => {
+            alert(`获得：${items[idx]}`);
+            cvs.style.transition = 'none'; cvs.style.transform = 'none';
+            drawSpinner('basic-spinner', items);
+          }, { once: true });
+        };
+      }
+      // ...其他商店类型同理
+    }
+
+    document.getElementById('shop-button').onclick = () => showView('shop-view');
+    document.getElementById('shop-back').onclick = () => showView('main-menu');
+    document.querySelectorAll('.shop-tabs button').forEach(btn => {
+      btn.onclick = () => {
+        document.querySelectorAll('.shop-tabs button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        loadShopCategory(btn.dataset.cat);
+      };
     });
 
-    // 设置菜单逻辑
-    const settingsBtn = document.getElementById('settings-btn');
-    const settingsMenu = document.getElementById('settings-menu');
-    const volumeToggleBtn = document.getElementById('volume-toggle');
-    const brightnessHighBtn = document.getElementById('brightness-high');
-    const brightnessLowBtn = document.getElementById('brightness-low');
-    let isMuted=false;
-    settingsBtn.addEventListener('click',()=>{
-      settingsMenu.style.display = settingsMenu.style.display==='flex'?'none':'flex';
-    });
-    volumeToggleBtn.addEventListener('click',()=>{
-      isMuted=!isMuted;
-      volumeToggleBtn.textContent=isMuted?'音量：禁音':'音量：开启';
-    });
-    brightnessHighBtn.addEventListener('click',()=>document.body.style.filter='brightness(1)');
-    brightnessLowBtn.addEventListener('click',()=>document.body.style.filter='brightness(0.5)');
-    document.addEventListener('click',e=>{
-      if(!settingsMenu.contains(e.target)&&e.target!==settingsBtn) settingsMenu.style.display='none';
+    document.getElementById('settings-btn').onclick = () => {
+      const m = document.getElementById('settings-menu');
+      m.style.display = m.style.display === 'flex' ? 'none' : 'flex';
+    };
+    document.getElementById('volume-toggle').onclick = e => {
+      e.target.textContent = e.target.textContent.includes('高') ? '音量：禁音' : '音量：高';
+    };
+    document.getElementById('brightness-toggle').onclick = e => {
+      if (e.target.textContent.includes('高')) {
+        e.target.textContent = '亮度：低'; document.body.style.filter = 'brightness(0.5)';
+      } else {
+        e.target.textContent = '亮度：高'; document.body.style.filter = 'brightness(1)';
+      }
+    };
+    document.addEventListener('click', e => {
+      const m = document.getElementById('settings-menu');
+      if (!m.contains(e.target) && e.target.id !== 'settings-btn') m.style.display = 'none';
     });
   </script>
 </body>
