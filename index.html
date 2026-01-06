@@ -38,13 +38,49 @@
       -webkit-tap-highlight-color: transparent;
     }
 
+    /* Theme + scene toggles (main page only) */
+    body.theme-cyan{
+      --accentA: rgba(34,211,238,0.95);
+      --accentB: rgba(167,139,250,0.90);
+      --accentLineA: rgba(34,211,238,0.16);
+      --accentLineB: rgba(167,139,250,0.14);
+      --scan: rgba(34,211,238,0.18);
+      --scan2: rgba(34,211,238,0.05);
+    }
+    body.theme-purple{
+      --accentA: rgba(192,132,252,0.95);
+      --accentB: rgba(96,165,250,0.88);
+      --accentLineA: rgba(192,132,252,0.16);
+      --accentLineB: rgba(96,165,250,0.14);
+      --scan: rgba(192,132,252,0.18);
+      --scan2: rgba(192,132,252,0.05);
+    }
+    body.scene-hangar{
+      --stageTintA: rgba(34,211,238,0.10);
+      --stageTintB: rgba(167,139,250,0.10);
+      --gridA: rgba(34,211,238,0.05);
+      --gridB: rgba(255,255,255,0.045);
+    }
+    body.scene-tactical{
+      --stageTintA: rgba(34,211,238,0.07);
+      --stageTintB: rgba(167,139,250,0.06);
+      --gridA: rgba(34,211,238,0.07);
+      --gridB: rgba(255,255,255,0.055);
+    }
+    body.scene-cyber{
+      --stageTintA: rgba(34,211,238,0.14);
+      --stageTintB: rgba(167,139,250,0.12);
+      --gridA: rgba(34,211,238,0.06);
+      --gridB: rgba(255,255,255,0.04);
+    }
+
     /* Background */
     .stage{
       position: fixed;
       inset: 0;
       background:
-        radial-gradient(1200px 700px at 70% 40%, rgba(34,211,238,0.10), transparent 60%),
-        radial-gradient(900px 520px at 28% 70%, rgba(167,139,250,0.10), transparent 62%),
+        radial-gradient(1200px 700px at 70% 40%, var(--stageTintA, rgba(34,211,238,0.10)), transparent 60%),
+        radial-gradient(900px 520px at 28% 70%, var(--stageTintB, rgba(167,139,250,0.10)), transparent 62%),
         url("mech-bg.svg") center/cover no-repeat;
       transform: translateZ(0);
     }
@@ -53,8 +89,8 @@
       position:absolute;
       inset:-20%;
       background:
-        repeating-linear-gradient(0deg, rgba(255,255,255,0.045) 0px, rgba(255,255,255,0.045) 1px, transparent 1px, transparent 6px),
-        repeating-linear-gradient(90deg, rgba(34,211,238,0.05) 0px, rgba(34,211,238,0.05) 1px, transparent 1px, transparent 10px);
+        repeating-linear-gradient(0deg, var(--gridB, rgba(255,255,255,0.045)) 0px, var(--gridB, rgba(255,255,255,0.045)) 1px, transparent 1px, transparent 6px),
+        repeating-linear-gradient(90deg, var(--gridA, rgba(34,211,238,0.05)) 0px, var(--gridA, rgba(34,211,238,0.05)) 1px, transparent 1px, transparent 10px);
       opacity: 0.18;
       transform: rotate(-6deg);
       pointer-events:none;
@@ -76,7 +112,7 @@
       top: 0;
       width: 140%;
       height: 220px;
-      background: linear-gradient(180deg, transparent, rgba(34,211,238,0.18), rgba(34,211,238,0.05), transparent);
+      background: linear-gradient(180deg, transparent, var(--scan, rgba(34,211,238,0.18)), var(--scan2, rgba(34,211,238,0.05)), transparent);
       mix-blend-mode: screen;
       filter: blur(0.2px);
       opacity: 0.85;
@@ -120,7 +156,7 @@
       position:absolute;
       inset:0;
       background:
-        linear-gradient(90deg, rgba(34,211,238,0.16), transparent 22%, transparent 78%, rgba(167,139,250,0.14)),
+        linear-gradient(90deg, var(--accentLineA, rgba(34,211,238,0.16)), transparent 22%, transparent 78%, var(--accentLineB, rgba(167,139,250,0.14))),
         repeating-linear-gradient(90deg, transparent 0px, transparent 18px, rgba(255,255,255,0.05) 18px, rgba(255,255,255,0.05) 19px);
       opacity: 0.18;
       pointer-events:none;
@@ -418,7 +454,7 @@
       display:block;
       width: 100%;
       height: 100%;
-      background: linear-gradient(180deg, rgba(34,211,238,0.85), rgba(167,139,250,0.55));
+      background: linear-gradient(180deg, var(--accentA, rgba(34,211,238,0.85)), var(--accentB, rgba(167,139,250,0.55)));
       transform-origin: bottom;
       transform: scaleY(0.2);
       animation: beat 2.4s ease-in-out infinite;
@@ -499,9 +535,44 @@
     @media (orientation: portrait){
       .rotate{ display:grid; }
     }
+
+    /* Style controls */
+    .prompt{
+      margin: 0 0 10px;
+      color: rgba(205,220,255,0.70);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+    .seg{
+      display:flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 8px 0 10px;
+    }
+    .chip{
+      appearance: none;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(0,0,0,0.22);
+      color: rgba(240,248,255,0.88);
+      padding: 7px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      letter-spacing: 0.06em;
+      cursor: pointer;
+      user-select: none;
+      transition: transform 120ms ease, border-color 120ms ease, background 120ms ease;
+      white-space: nowrap;
+    }
+    .chip:active{ transform: translateY(1px); }
+    .chip:hover{ border-color: rgba(34,211,238,0.30); }
+    .chip.active{
+      border-color: rgba(34,211,238,0.38);
+      background: linear-gradient(180deg, var(--accentLineA, rgba(34,211,238,0.18)), rgba(255,255,255,0.06));
+      box-shadow: 0 0 0 1px rgba(34,211,238,0.10) inset;
+    }
   </style>
 </head>
-<body>
+<body class="theme-cyan scene-hangar">
   <div class="stage" aria-hidden="true"></div>
   <div class="scan" aria-hidden="true"></div>
 
@@ -589,7 +660,7 @@
           <h3>MISSION</h3>
           <div class="kv">
             <span>目标</span><b>进入战区（占位）</b>
-            <span>状态</span><b style="color: rgba(34,211,238,0.95)">待命</b>
+            <span>状态</span><b style="color: var(--accentA, rgba(34,211,238,0.95))">待命</b>
           </div>
         </div>
 
@@ -600,21 +671,187 @@
             <span>输入</span><b>触控 / 手柄</b>
           </div>
         </div>
+
+        <div class="card" aria-label="风格偏好">
+          <h3 id="styleTitle">STYLE</h3>
+          <p class="prompt" id="stylePrompt">
+            告诉我你想要的主页面风格细节：配色（更蓝青/更紫）、按钮文案（中文/英文）、更像「机甲仓库 / 战术地图 / 赛博UI」哪一种，我再把主界面迭代到你满意。
+          </p>
+
+          <div class="kv">
+            <span id="lblColor">配色</span>
+            <span class="seg" role="group" aria-label="配色">
+              <button class="chip" type="button" data-pref="theme" data-value="theme-cyan" id="chipCyan">蓝青</button>
+              <button class="chip" type="button" data-pref="theme" data-value="theme-purple" id="chipPurple">偏紫</button>
+            </span>
+
+            <span id="lblCopy">文案</span>
+            <span class="seg" role="group" aria-label="文案">
+              <button class="chip" type="button" data-pref="lang" data-value="zh" id="chipZh">中文</button>
+              <button class="chip" type="button" data-pref="lang" data-value="en" id="chipEn">EN</button>
+            </span>
+
+            <span id="lblScene">风格</span>
+            <span class="seg" role="group" aria-label="风格">
+              <button class="chip" type="button" data-pref="scene" data-value="scene-hangar" id="chipHangar">机库</button>
+              <button class="chip" type="button" data-pref="scene" data-value="scene-tactical" id="chipTactical">战术</button>
+              <button class="chip" type="button" data-pref="scene" data-value="scene-cyber" id="chipCyber">赛博</button>
+            </span>
+          </div>
+        </div>
       </div>
     </section>
   </main>
 
   <div class="rotate" role="dialog" aria-live="polite" aria-label="请横屏">
     <div class="box">
-      <h2>请将手机横过来</h2>
-      <p>这是一个横屏俯视手游主页面示例。把设备旋转到横屏后，会显示机甲风主界面。</p>
+      <h2 id="rotateH2">请将手机横过来</h2>
+      <p id="rotateP">这是一个横屏俯视手游主页面示例。把设备旋转到横屏后，会显示机甲风主界面。</p>
     </div>
   </div>
 
   <script>
+    const root = document.body;
+
     const clockEl = document.getElementById("clock");
     const energyEl = document.getElementById("energy");
     const btnStart = document.getElementById("btnStart");
+
+    const i18n = {
+      zh: {
+        title: "机甲行动 · 主页面",
+        subtitle: "横屏俯视手游 · 主页面（仅 UI 骨架）<br/>背景：机甲机库/甲板风格。",
+        btnStart: "开始作战",
+        btnStartHint: "进入（占位）",
+        btnHangar: "机库",
+        btnSettings: "设置",
+        soon: "敬请期待",
+        footer: "提示：当前只做主页面。按钮点击只会弹出占位提示，后续再接入“开始/角色/商店/设置”等功能。",
+        rotateH2: "请将手机横过来",
+        rotateP: "这是一个横屏俯视手游主页面示例。把设备旋转到横屏后，会显示机甲风主界面。",
+        alertStart: "开始作战：占位提示（后续再接入真实游戏流程）",
+        styleTitle: "STYLE",
+        stylePrompt: "告诉我你想要的主页面风格细节：配色（更蓝青/更紫）、按钮文案（中文/英文）、更像「机甲仓库 / 战术地图 / 赛博UI」哪一种，我再把主界面迭代到你满意。",
+        lblColor: "配色",
+        lblCopy: "文案",
+        lblScene: "风格",
+        cyan: "蓝青",
+        purple: "偏紫",
+        hangar: "机库",
+        tactical: "战术",
+        cyber: "赛博",
+      },
+      en: {
+        title: "Mech Ops · Home",
+        subtitle: "Landscape top‑down mobile UI · Home (UI only)<br/>Background: mech hangar/deck style.",
+        btnStart: "DEPLOY",
+        btnStartHint: "Placeholder",
+        btnHangar: "HANGAR",
+        btnSettings: "SETTINGS",
+        soon: "SOON",
+        footer: "Note: this is home screen only. Buttons are placeholders; gameplay/garage/shop/settings will be added later.",
+        rotateH2: "Rotate to landscape",
+        rotateP: "This is a landscape top‑down mobile home screen. Rotate your device to see the mech-style UI.",
+        alertStart: "Deploy: placeholder (game flow will be added later).",
+        styleTitle: "STYLE",
+        stylePrompt: "Tell me what home screen style you want: colors (cyan vs purple), copy (CN vs EN), and whether it should feel more like Hangar / Tactical map / Cyber UI.",
+        lblColor: "Color",
+        lblCopy: "Copy",
+        lblScene: "Scene",
+        cyan: "CYAN",
+        purple: "PURPLE",
+        hangar: "HANGAR",
+        tactical: "TACTICAL",
+        cyber: "CYBER",
+      }
+    };
+
+    function setText(sel, html){
+      const el = document.querySelector(sel);
+      if (!el) return;
+      el.innerHTML = html;
+    }
+    function setPlain(id, text){
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.textContent = text;
+    }
+    function setLang(lang){
+      const t = i18n[lang] || i18n.zh;
+      document.title = t.title;
+      setText(".logo .subtitle", t.subtitle);
+      setPlain("styleTitle", t.styleTitle);
+      setPlain("stylePrompt", t.stylePrompt);
+      setPlain("lblColor", t.lblColor);
+      setPlain("lblCopy", t.lblCopy);
+      setPlain("lblScene", t.lblScene);
+
+      const startLabel = btnStart.querySelector(".k");
+      const startHint = btnStart.querySelector(".hint");
+      if (startLabel) startLabel.innerHTML = `<span class="ic">▶</span>${t.btnStart}`;
+      if (startHint) startHint.textContent = t.btnStartHint;
+
+      const disabledBtns = document.querySelectorAll(".menu .btn[disabled]");
+      if (disabledBtns[0]) {
+        const k = disabledBtns[0].querySelector(".k");
+        const hint = disabledBtns[0].querySelector(".hint");
+        if (k) k.innerHTML = `<span class="ic">▦</span>${t.btnHangar}`;
+        if (hint) hint.textContent = t.soon;
+      }
+      if (disabledBtns[1]) {
+        const k = disabledBtns[1].querySelector(".k");
+        const hint = disabledBtns[1].querySelector(".hint");
+        if (k) k.innerHTML = `<span class="ic">⚙</span>${t.btnSettings}`;
+        if (hint) hint.textContent = t.soon;
+      }
+
+      setPlain("rotateH2", t.rotateH2);
+      setPlain("rotateP", t.rotateP);
+      const footer = document.querySelector(".footerHint");
+      if (footer) footer.textContent = t.footer;
+
+      setPlain("chipCyan", t.cyan);
+      setPlain("chipPurple", t.purple);
+      setPlain("chipHangar", t.hangar);
+      setPlain("chipTactical", t.tactical);
+      setPlain("chipCyber", t.cyber);
+    }
+
+    function applyPrefs(p){
+      root.classList.remove("theme-cyan", "theme-purple");
+      root.classList.add(p.theme || "theme-cyan");
+
+      root.classList.remove("scene-hangar", "scene-tactical", "scene-cyber");
+      root.classList.add(p.scene || "scene-hangar");
+
+      setLang(p.lang || "zh");
+
+      document.querySelectorAll(".chip[data-pref]").forEach(btn => {
+        const pref = btn.getAttribute("data-pref");
+        const val = btn.getAttribute("data-value");
+        btn.classList.toggle("active", (pref === "lang" ? (p.lang === val) : (p[pref] === val)));
+      });
+    }
+
+    function loadPrefs(){
+      try{
+        const raw = localStorage.getItem("homePrefs");
+        const p = raw ? JSON.parse(raw) : {};
+        return {
+          theme: p.theme || "theme-cyan",
+          scene: p.scene || "scene-hangar",
+          lang: p.lang || "zh",
+        };
+      }catch{
+        return { theme: "theme-cyan", scene: "scene-hangar", lang: "zh" };
+      }
+    }
+    function savePrefs(p){
+      try{ localStorage.setItem("homePrefs", JSON.stringify(p)); }catch{}
+    }
+
+    const prefs = loadPrefs();
+    applyPrefs(prefs);
 
     function pad2(n){ return String(n).padStart(2, "0"); }
     function tick(){
@@ -633,7 +870,25 @@
     }, 1200);
 
     btnStart.addEventListener("click", () => {
-      alert("开始作战：占位提示（后续再接入真实游戏流程）");
+      const lang = prefs.lang || "zh";
+      alert((i18n[lang] || i18n.zh).alertStart);
+    });
+
+    document.addEventListener("click", (e) => {
+      const t = e.target;
+      if (!(t instanceof HTMLElement)) return;
+      const btn = t.closest(".chip[data-pref]");
+      if (!btn) return;
+      const pref = btn.getAttribute("data-pref");
+      const val = btn.getAttribute("data-value");
+      if (!pref || !val) return;
+
+      if (pref === "lang") prefs.lang = val;
+      if (pref === "theme") prefs.theme = val;
+      if (pref === "scene") prefs.scene = val;
+
+      savePrefs(prefs);
+      applyPrefs(prefs);
     });
   </script>
 </body>
