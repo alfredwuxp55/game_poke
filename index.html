@@ -126,11 +126,103 @@
     }
 
     /* Layout */
+    .screen{
+      position: absolute;
+      inset: 0;
+      display: none;
+      z-index: 2;
+    }
+    .screen.active{ display: block; }
+
+    .topbar{
+      position: fixed;
+      top: var(--safe-top);
+      left: var(--safe-left);
+      right: var(--safe-right);
+      z-index: 20;
+      padding: 10px 12px;
+      display:flex;
+      align-items: center;
+      gap: 10px;
+      pointer-events: none; /* enable per-control */
+    }
+    .topbar > *{ pointer-events: auto; }
+    .topbtn{
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(0,0,0,0.28);
+      color: rgba(240,248,255,0.94);
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      cursor: pointer;
+      user-select: none;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      box-shadow: 0 14px 50px rgba(0,0,0,0.35);
+    }
+    .topbtn:active{ transform: translateY(1px); }
+    .topbtn.hidden{ visibility: hidden; }
+    .topmeta{
+      flex: 1;
+      display:flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .toprow{
+      display:flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: flex-end;
+    }
+    .topchip{
+      display:inline-flex;
+      align-items:center;
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: rgba(0,0,0,0.22);
+      border: 1px solid rgba(255,255,255,0.10);
+      color: rgba(240,248,255,0.86);
+      font-size: 12px;
+      letter-spacing: 0.06em;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .toast{
+      position: fixed;
+      left: 50%;
+      bottom: calc(18px + var(--safe-bottom));
+      transform: translateX(-50%);
+      z-index: 30;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(0,0,0,0.38);
+      color: rgba(240,248,255,0.92);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      box-shadow: 0 14px 60px rgba(0,0,0,0.40);
+      font-size: 13px;
+      letter-spacing: 0.04em;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 160ms ease, transform 160ms ease;
+      max-width: min(720px, calc(100vw - 36px));
+      text-align: center;
+    }
+    .toast.show{
+      opacity: 1;
+      transform: translateX(-50%) translateY(-2px);
+    }
+
     .ui{
       position: relative;
       height: 100%;
       padding:
-        calc(18px + var(--safe-top))
+        calc(76px + var(--safe-top))
         calc(18px + var(--safe-right))
         calc(18px + var(--safe-bottom))
         calc(18px + var(--safe-left));
@@ -576,6 +668,22 @@
   <div class="stage" aria-hidden="true"></div>
   <div class="scan" aria-hidden="true"></div>
 
+  <div class="topbar" role="navigation" aria-label="顶部栏">
+    <button class="topbtn" id="btnBack" type="button" aria-label="返回">←</button>
+    <div class="topmeta">
+      <div class="toprow">
+        <span class="topchip mono" id="topView">HOME</span>
+        <span class="topchip" id="topMech">机体：—</span>
+      </div>
+      <div class="toprow">
+        <span class="topchip" id="topName">指挥官：—</span>
+        <span class="topchip mono" id="topCoins">CR 0</span>
+      </div>
+    </div>
+  </div>
+  <div class="toast" id="toast" aria-live="polite"></div>
+
+  <section class="screen active" id="screen-home" aria-label="主页面">
   <main class="ui" role="main" aria-label="主页面">
     <!-- Left -->
     <section class="panel">
@@ -595,11 +703,19 @@
             <span class="k"><span class="ic">▶</span>开始作战</span>
             <span class="hint">进入（占位）</span>
           </button>
-          <button class="btn" type="button" disabled>
+          <button class="btn" id="btnHangar" type="button">
             <span class="k"><span class="ic">▦</span>机库</span>
-            <span class="hint">敬请期待</span>
+            <span class="hint">整备</span>
           </button>
-          <button class="btn" type="button" disabled>
+          <button class="btn" id="btnShop" type="button">
+            <span class="k"><span class="ic">⛭</span>商店</span>
+            <span class="hint">补给</span>
+          </button>
+          <button class="btn" id="btnProfile" type="button">
+            <span class="k"><span class="ic">👤</span>账号</span>
+            <span class="hint">昵称</span>
+          </button>
+          <button class="btn" id="btnSettings" type="button" disabled>
             <span class="k"><span class="ic">⚙</span>设置</span>
             <span class="hint">敬请期待</span>
           </button>
@@ -650,9 +766,9 @@
         <div class="card">
           <h3>LOADOUT</h3>
           <div class="kv">
-            <span>机体</span><b>“夜枭” Mk‑I</b>
+            <span>机体</span><b id="hudMechName">“夜枭” Mk‑I</b>
             <span>能量</span><b class="mono" id="energy">78%</b>
-            <span>装甲</span><b class="mono">A‑3</b>
+            <span>装甲</span><b class="mono" id="hudMechArmor">A‑3</b>
           </div>
         </div>
 
@@ -702,6 +818,203 @@
       </div>
     </section>
   </main>
+  </section>
+
+  <section class="screen" id="screen-deploy" aria-label="战斗占位页">
+    <div class="ui" style="grid-template-columns: 1fr; gap: 18px;">
+      <section class="panel">
+        <div class="content preview">
+          <div class="map" aria-label="战斗训练区">
+            <div class="reticle" aria-hidden="true"></div>
+            <div class="pip" aria-hidden="true"></div>
+            <div class="pip2" aria-hidden="true"></div>
+            <div class="label">
+              <span class="mono">TRAINING SIM</span>
+              <span>·</span>
+              <span class="mono">TOP‑DOWN</span>
+              <span>·</span>
+              <span class="mono">PLACEHOLDER</span>
+            </div>
+          </div>
+          <div class="menu" style="margin-top: 0;">
+            <button class="btn primary" id="btnTrain" type="button">
+              <span class="k"><span class="ic">⚔</span>开始训练</span>
+              <span class="hint">占位</span>
+            </button>
+            <button class="btn" id="btnBackHome1" type="button">
+              <span class="k"><span class="ic">↩</span>返回主页面</span>
+              <span class="hint">HOME</span>
+            </button>
+          </div>
+        </div>
+      </section>
+    </div>
+  </section>
+
+  <section class="screen" id="screen-hangar" aria-label="机库">
+    <div class="ui" style="grid-template-columns: minmax(280px, 420px) 1fr; gap: 18px;">
+      <section class="panel">
+        <div class="content">
+          <h2 style="margin:0 0 12px; letter-spacing:0.10em;">机库</h2>
+          <p class="prompt" style="margin-bottom:12px;">选择你的机体。当前选择会显示在主界面并被“开始作战/训练”使用（占位）。</p>
+          <div class="menu" style="margin-top: 0;">
+            <button class="btn" type="button" data-mech="nighthawk">
+              <span class="k"><span class="ic">▦</span>“夜枭” Mk‑I</span>
+              <span class="hint mono">A‑3</span>
+            </button>
+            <button class="btn" type="button" data-mech="bulwark">
+              <span class="k"><span class="ic">▦</span>“壁垒” Mk‑II</span>
+              <span class="hint mono">B‑1</span>
+            </button>
+            <button class="btn" type="button" data-mech="specter">
+              <span class="k"><span class="ic">▦</span>“幽影” Mk‑IV</span>
+              <span class="hint mono">S‑7</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="content hud">
+          <div class="card">
+            <h3>MECH</h3>
+            <div class="kv">
+              <span>机体</span><b id="hangarMechName">—</b>
+              <span>定位</span><b id="hangarMechRole">—</b>
+              <span>装甲</span><b class="mono" id="hangarMechArmor">—</b>
+              <span>武装</span><b id="hangarMechWeapons">—</b>
+            </div>
+          </div>
+          <div class="card">
+            <h3>STATS</h3>
+            <div class="kv">
+              <span>火力</span><b class="mono" id="hangarStatAtk">--</b>
+              <span>机动</span><b class="mono" id="hangarStatMob">--</b>
+              <span>护盾</span><b class="mono" id="hangarStatShd">--</b>
+              <span>散热</span><b class="mono" id="hangarStatHeat">--</b>
+            </div>
+          </div>
+          <div class="menu" style="margin-top: 0;">
+            <button class="btn primary" id="btnSetMech" type="button">
+              <span class="k"><span class="ic">✓</span>设为当前机体</span>
+              <span class="hint">应用</span>
+            </button>
+            <button class="btn" id="btnBackHome2" type="button">
+              <span class="k"><span class="ic">↩</span>返回主页面</span>
+              <span class="hint">HOME</span>
+            </button>
+          </div>
+        </div>
+      </section>
+    </div>
+  </section>
+
+  <section class="screen" id="screen-shop" aria-label="商店">
+    <div class="ui" style="grid-template-columns: 1fr 1fr; gap: 18px;">
+      <section class="panel">
+        <div class="content">
+          <h2 style="margin:0 0 12px; letter-spacing:0.10em;">商店</h2>
+          <p class="prompt">这里是主页面的“补给/购买”占位实现：使用 CR 购买道具并记录到本地。</p>
+          <div class="menu" style="margin-top: 0;">
+            <button class="btn" id="buyParts" type="button">
+              <span class="k"><span class="ic">⛭</span>改造零件 ×10</span>
+              <span class="hint mono">CR 200</span>
+            </button>
+            <button class="btn" id="buyPaint" type="button">
+              <span class="k"><span class="ic">⛭</span>机体涂装券 ×1</span>
+              <span class="hint mono">CR 350</span>
+            </button>
+            <button class="btn" id="buyCrate" type="button">
+              <span class="k"><span class="ic">⛭</span>补给箱 ×1</span>
+              <span class="hint mono">CR 500</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="content hud">
+          <div class="card">
+            <h3>INVENTORY</h3>
+            <div class="kv">
+              <span>改造零件</span><b class="mono" id="invParts">0</b>
+              <span>涂装券</span><b class="mono" id="invPaint">0</b>
+              <span>补给箱</span><b class="mono" id="invCrate">0</b>
+            </div>
+          </div>
+          <div class="card">
+            <h3>NOTE</h3>
+            <div class="kv">
+              <span>说明</span><b>仅做主页面功能演示</b>
+              <span>存储</span><b class="mono">localStorage</b>
+            </div>
+          </div>
+          <div class="menu" style="margin-top: 0;">
+            <button class="btn" id="btnBackHome3" type="button">
+              <span class="k"><span class="ic">↩</span>返回主页面</span>
+              <span class="hint">HOME</span>
+            </button>
+          </div>
+        </div>
+      </section>
+    </div>
+  </section>
+
+  <section class="screen" id="screen-profile" aria-label="账号">
+    <div class="ui" style="grid-template-columns: minmax(300px, 520px) 1fr; gap: 18px;">
+      <section class="panel">
+        <div class="content">
+          <h2 style="margin:0 0 12px; letter-spacing:0.10em;">账号</h2>
+          <p class="prompt">设置昵称与头像（本地保存）。昵称会显示在顶部栏。</p>
+
+          <div class="card" style="margin-bottom: 12px;">
+            <h3>NICKNAME</h3>
+            <div class="kv">
+              <span>昵称</span>
+              <input id="inputName" type="text" maxlength="12" placeholder="输入昵称…" style="width: 100%; padding: 10px 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.14); background: rgba(0,0,0,0.18); color: rgba(240,248,255,0.92); outline: none;" />
+              <span>头像</span>
+              <div class="seg" role="group" aria-label="头像">
+                <button class="chip" type="button" data-avatar="owl">OWL</button>
+                <button class="chip" type="button" data-avatar="wolf">WOLF</button>
+                <button class="chip" type="button" data-avatar="viper">VIPER</button>
+                <button class="chip" type="button" data-avatar="rx">RX</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="menu" style="margin-top: 0;">
+            <button class="btn primary" id="btnSaveProfile" type="button">
+              <span class="k"><span class="ic">✓</span>保存</span>
+              <span class="hint">应用</span>
+            </button>
+            <button class="btn" id="btnBackHome4" type="button">
+              <span class="k"><span class="ic">↩</span>返回主页面</span>
+              <span class="hint">HOME</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="content hud">
+          <div class="card">
+            <h3>PREVIEW</h3>
+            <div class="kv">
+              <span>指挥官</span><b id="profilePreviewName">—</b>
+              <span>头像代号</span><b class="mono" id="profilePreviewAvatar">—</b>
+            </div>
+          </div>
+          <div class="card">
+            <h3>SECURITY</h3>
+            <div class="kv">
+              <span>说明</span><b>此处仅本地存储</b>
+              <span>联网</span><b class="mono">OFF</b>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </section>
 
   <div class="rotate" role="dialog" aria-live="polite" aria-label="请横屏">
     <div class="box">
@@ -716,6 +1029,36 @@
     const clockEl = document.getElementById("clock");
     const energyEl = document.getElementById("energy");
     const btnStart = document.getElementById("btnStart");
+    const btnHangar = document.getElementById("btnHangar");
+    const btnShop = document.getElementById("btnShop");
+    const btnProfile = document.getElementById("btnProfile");
+    const btnSettings = document.getElementById("btnSettings");
+
+    const btnBack = document.getElementById("btnBack");
+    const topViewEl = document.getElementById("topView");
+    const topMechEl = document.getElementById("topMech");
+    const topNameEl = document.getElementById("topName");
+    const topCoinsEl = document.getElementById("topCoins");
+    const toastEl = document.getElementById("toast");
+
+    const hudMechNameEl = document.getElementById("hudMechName");
+    const hudMechArmorEl = document.getElementById("hudMechArmor");
+
+    const screens = {
+      home: document.getElementById("screen-home"),
+      deploy: document.getElementById("screen-deploy"),
+      hangar: document.getElementById("screen-hangar"),
+      shop: document.getElementById("screen-shop"),
+      profile: document.getElementById("screen-profile"),
+    };
+
+    function toast(msg){
+      if (!toastEl) return;
+      toastEl.textContent = msg;
+      toastEl.classList.add("show");
+      window.clearTimeout(toast._t);
+      toast._t = window.setTimeout(() => toastEl.classList.remove("show"), 1400);
+    }
 
     const i18n = {
       zh: {
@@ -724,12 +1067,16 @@
         btnStart: "开始作战",
         btnStartHint: "进入（占位）",
         btnHangar: "机库",
+        btnHangarHint: "整备",
+        btnShop: "商店",
+        btnShopHint: "补给",
+        btnProfile: "账号",
+        btnProfileHint: "昵称",
         btnSettings: "设置",
         soon: "敬请期待",
         footer: "提示：当前只做主页面。按钮点击只会弹出占位提示，后续再接入“开始/角色/商店/设置”等功能。",
         rotateH2: "请将手机横过来",
         rotateP: "这是一个横屏俯视手游主页面示例。把设备旋转到横屏后，会显示机甲风主界面。",
-        alertStart: "开始作战：占位提示（后续再接入真实游戏流程）",
         styleTitle: "STYLE",
         stylePrompt: "告诉我你想要的主页面风格细节：配色（更蓝青/更紫）、按钮文案（中文/英文）、更像「机甲仓库 / 战术地图 / 赛博UI」哪一种，我再把主界面迭代到你满意。",
         lblColor: "配色",
@@ -740,6 +1087,13 @@
         hangar: "机库",
         tactical: "战术",
         cyber: "赛博",
+        viewHome: "HOME",
+        viewDeploy: "DEPLOY",
+        viewHangar: "HANGAR",
+        viewShop: "SHOP",
+        viewProfile: "PROFILE",
+        topMech: "机体",
+        topCommander: "指挥官",
       },
       en: {
         title: "Mech Ops · Home",
@@ -747,12 +1101,16 @@
         btnStart: "DEPLOY",
         btnStartHint: "Placeholder",
         btnHangar: "HANGAR",
+        btnHangarHint: "Ready",
+        btnShop: "SHOP",
+        btnShopHint: "Supply",
+        btnProfile: "PROFILE",
+        btnProfileHint: "Name",
         btnSettings: "SETTINGS",
         soon: "SOON",
         footer: "Note: this is home screen only. Buttons are placeholders; gameplay/garage/shop/settings will be added later.",
         rotateH2: "Rotate to landscape",
         rotateP: "This is a landscape top‑down mobile home screen. Rotate your device to see the mech-style UI.",
-        alertStart: "Deploy: placeholder (game flow will be added later).",
         styleTitle: "STYLE",
         stylePrompt: "Tell me what home screen style you want: colors (cyan vs purple), copy (CN vs EN), and whether it should feel more like Hangar / Tactical map / Cyber UI.",
         lblColor: "Color",
@@ -763,8 +1121,79 @@
         hangar: "HANGAR",
         tactical: "TACTICAL",
         cyber: "CYBER",
+        viewHome: "HOME",
+        viewDeploy: "DEPLOY",
+        viewHangar: "HANGAR",
+        viewShop: "SHOP",
+        viewProfile: "PROFILE",
+        topMech: "Mech",
+        topCommander: "Cmdr",
       }
     };
+
+    const MECHS = {
+      nighthawk: { id: "nighthawk", name: "“夜枭” Mk‑I", role: "突击 / 机动", armor: "A‑3", weapons: "双联炮 · 短刃", atk: 72, mob: 85, shd: 38, heat: 64 },
+      bulwark: { id: "bulwark", name: "“壁垒” Mk‑II", role: "重装 / 防御", armor: "B‑1", weapons: "重盾 · 榴弹", atk: 78, mob: 42, shd: 82, heat: 55 },
+      specter: { id: "specter", name: "“幽影” Mk‑IV", role: "潜入 / 电子战", armor: "S‑7", weapons: "脉冲 · 干扰器", atk: 64, mob: 74, shd: 60, heat: 72 },
+    };
+
+    function loadState(){
+      try{
+        const raw = localStorage.getItem("gameStateV1");
+        const s = raw ? JSON.parse(raw) : {};
+        return {
+          coins: Number.isFinite(s.coins) ? s.coins : 1200,
+          name: typeof s.name === "string" && s.name.trim() ? s.name.trim() : "指挥官",
+          avatar: typeof s.avatar === "string" ? s.avatar : "owl",
+          mech: typeof s.mech === "string" && MECHS[s.mech] ? s.mech : "nighthawk",
+          inv: {
+            parts: s?.inv?.parts ?? 0,
+            paint: s?.inv?.paint ?? 0,
+            crate: s?.inv?.crate ?? 0,
+          }
+        };
+      }catch{
+        return { coins: 1200, name: "指挥官", avatar: "owl", mech: "nighthawk", inv: { parts: 0, paint: 0, crate: 0 } };
+      }
+    }
+    function saveState(){
+      try{ localStorage.setItem("gameStateV1", JSON.stringify(state)); }catch{}
+    }
+
+    const state = loadState();
+    let currentScreen = "home";
+    let pendingMech = state.mech;
+
+    function t(){
+      return i18n[prefs.lang] || i18n.zh;
+    }
+
+    function setTopbar(){
+      const tx = t();
+      const mech = MECHS[state.mech] || MECHS.nighthawk;
+      const viewMap = {
+        home: tx.viewHome,
+        deploy: tx.viewDeploy,
+        hangar: tx.viewHangar,
+        shop: tx.viewShop,
+        profile: tx.viewProfile,
+      };
+      if (topViewEl) topViewEl.textContent = viewMap[currentScreen] || "HOME";
+      if (topMechEl) topMechEl.textContent = `${tx.topMech}：${mech.name}`;
+      if (topNameEl) topNameEl.textContent = `${tx.topCommander}：${state.name}`;
+      if (topCoinsEl) topCoinsEl.textContent = `CR ${state.coins}`;
+      if (btnBack) btnBack.classList.toggle("hidden", currentScreen === "home");
+      if (hudMechNameEl) hudMechNameEl.textContent = mech.name;
+      if (hudMechArmorEl) hudMechArmorEl.textContent = mech.armor;
+    }
+
+    function showScreen(name){
+      if (!screens[name]) return;
+      Object.values(screens).forEach(s => s && s.classList.remove("active"));
+      screens[name].classList.add("active");
+      currentScreen = name;
+      setTopbar();
+    }
 
     function setText(sel, html){
       const el = document.querySelector(sel);
@@ -791,16 +1220,27 @@
       if (startLabel) startLabel.innerHTML = `<span class="ic">▶</span>${t.btnStart}`;
       if (startHint) startHint.textContent = t.btnStartHint;
 
-      const disabledBtns = document.querySelectorAll(".menu .btn[disabled]");
-      if (disabledBtns[0]) {
-        const k = disabledBtns[0].querySelector(".k");
-        const hint = disabledBtns[0].querySelector(".hint");
+      if (btnHangar){
+        const k = btnHangar.querySelector(".k");
+        const hint = btnHangar.querySelector(".hint");
         if (k) k.innerHTML = `<span class="ic">▦</span>${t.btnHangar}`;
-        if (hint) hint.textContent = t.soon;
+        if (hint) hint.textContent = t.btnHangarHint;
       }
-      if (disabledBtns[1]) {
-        const k = disabledBtns[1].querySelector(".k");
-        const hint = disabledBtns[1].querySelector(".hint");
+      if (btnShop){
+        const k = btnShop.querySelector(".k");
+        const hint = btnShop.querySelector(".hint");
+        if (k) k.innerHTML = `<span class="ic">⛭</span>${t.btnShop}`;
+        if (hint) hint.textContent = t.btnShopHint;
+      }
+      if (btnProfile){
+        const k = btnProfile.querySelector(".k");
+        const hint = btnProfile.querySelector(".hint");
+        if (k) k.innerHTML = `<span class="ic">👤</span>${t.btnProfile}`;
+        if (hint) hint.textContent = t.btnProfileHint;
+      }
+      if (btnSettings){
+        const k = btnSettings.querySelector(".k");
+        const hint = btnSettings.querySelector(".hint");
         if (k) k.innerHTML = `<span class="ic">⚙</span>${t.btnSettings}`;
         if (hint) hint.textContent = t.soon;
       }
@@ -852,6 +1292,7 @@
 
     const prefs = loadPrefs();
     applyPrefs(prefs);
+    setTopbar();
 
     function pad2(n){ return String(n).padStart(2, "0"); }
     function tick(){
@@ -869,10 +1310,139 @@
       energyEl.textContent = `${Math.round(e)}%`;
     }, 1200);
 
-    btnStart.addEventListener("click", () => {
-      const lang = prefs.lang || "zh";
-      alert((i18n[lang] || i18n.zh).alertStart);
+    // Navigation
+    btnStart.addEventListener("click", () => showScreen("deploy"));
+    btnHangar?.addEventListener("click", () => showScreen("hangar"));
+    btnShop?.addEventListener("click", () => showScreen("shop"));
+    btnProfile?.addEventListener("click", () => showScreen("profile"));
+    btnBack?.addEventListener("click", () => showScreen("home"));
+
+    document.getElementById("btnBackHome1")?.addEventListener("click", () => showScreen("home"));
+    document.getElementById("btnBackHome2")?.addEventListener("click", () => showScreen("home"));
+    document.getElementById("btnBackHome3")?.addEventListener("click", () => showScreen("home"));
+    document.getElementById("btnBackHome4")?.addEventListener("click", () => showScreen("home"));
+
+    document.getElementById("btnTrain")?.addEventListener("click", () => toast("训练开始：占位（后续接入真实战斗逻辑）"));
+
+    // Hangar interactions
+    const hangar = {
+      name: document.getElementById("hangarMechName"),
+      role: document.getElementById("hangarMechRole"),
+      armor: document.getElementById("hangarMechArmor"),
+      weapons: document.getElementById("hangarMechWeapons"),
+      atk: document.getElementById("hangarStatAtk"),
+      mob: document.getElementById("hangarStatMob"),
+      shd: document.getElementById("hangarStatShd"),
+      heat: document.getElementById("hangarStatHeat"),
+      setBtn: document.getElementById("btnSetMech"),
+      list: screens.hangar?.querySelectorAll("[data-mech]") || [],
+    };
+    function renderHangar(id){
+      const m = MECHS[id] || MECHS.nighthawk;
+      hangar.name && (hangar.name.textContent = m.name);
+      hangar.role && (hangar.role.textContent = m.role);
+      hangar.armor && (hangar.armor.textContent = m.armor);
+      hangar.weapons && (hangar.weapons.textContent = m.weapons);
+      hangar.atk && (hangar.atk.textContent = String(m.atk));
+      hangar.mob && (hangar.mob.textContent = String(m.mob));
+      hangar.shd && (hangar.shd.textContent = String(m.shd));
+      hangar.heat && (hangar.heat.textContent = String(m.heat));
+      hangar.list.forEach(b => b.classList.toggle("primary", b.getAttribute("data-mech") === id));
+    }
+    renderHangar(pendingMech);
+    hangar.list.forEach(btn => {
+      btn.addEventListener("click", () => {
+        const id = btn.getAttribute("data-mech");
+        if (!id) return;
+        pendingMech = id;
+        renderHangar(pendingMech);
+      });
     });
+    hangar.setBtn?.addEventListener("click", () => {
+      state.mech = pendingMech;
+      saveState();
+      setTopbar();
+      toast("已应用当前机体");
+    });
+
+    // Shop interactions
+    const invPartsEl = document.getElementById("invParts");
+    const invPaintEl = document.getElementById("invPaint");
+    const invCrateEl = document.getElementById("invCrate");
+    function renderShop(){
+      invPartsEl && (invPartsEl.textContent = String(state.inv.parts));
+      invPaintEl && (invPaintEl.textContent = String(state.inv.paint));
+      invCrateEl && (invCrateEl.textContent = String(state.inv.crate));
+    }
+    function spend(cost){
+      if (state.coins < cost){
+        toast("CR 不足");
+        return false;
+      }
+      state.coins -= cost;
+      saveState();
+      setTopbar();
+      return true;
+    }
+    document.getElementById("buyParts")?.addEventListener("click", () => {
+      if (!spend(200)) return;
+      state.inv.parts += 10;
+      saveState();
+      renderShop();
+      toast("购买成功：改造零件 ×10");
+    });
+    document.getElementById("buyPaint")?.addEventListener("click", () => {
+      if (!spend(350)) return;
+      state.inv.paint += 1;
+      saveState();
+      renderShop();
+      toast("购买成功：机体涂装券 ×1");
+    });
+    document.getElementById("buyCrate")?.addEventListener("click", () => {
+      if (!spend(500)) return;
+      state.inv.crate += 1;
+      saveState();
+      renderShop();
+      toast("购买成功：补给箱 ×1");
+    });
+    renderShop();
+
+    // Profile interactions
+    const inputName = document.getElementById("inputName");
+    const previewName = document.getElementById("profilePreviewName");
+    const previewAvatar = document.getElementById("profilePreviewAvatar");
+    const btnSaveProfile = document.getElementById("btnSaveProfile");
+    const avatarBtns = screens.profile?.querySelectorAll("[data-avatar]") || [];
+    let pendingAvatar = state.avatar;
+    function renderProfile(){
+      if (inputName) inputName.value = state.name;
+      previewName && (previewName.textContent = state.name);
+      previewAvatar && (previewAvatar.textContent = state.avatar);
+      avatarBtns.forEach(b => b.classList.toggle("active", b.getAttribute("data-avatar") === pendingAvatar));
+    }
+    inputName?.addEventListener("input", () => {
+      const v = (inputName.value || "").trim();
+      previewName && (previewName.textContent = v || "—");
+    });
+    avatarBtns.forEach(b => {
+      b.addEventListener("click", () => {
+        const a = b.getAttribute("data-avatar");
+        if (!a) return;
+        pendingAvatar = a;
+        avatarBtns.forEach(x => x.classList.toggle("active", x.getAttribute("data-avatar") === pendingAvatar));
+        previewAvatar && (previewAvatar.textContent = pendingAvatar);
+      });
+    });
+    btnSaveProfile?.addEventListener("click", () => {
+      const name = (inputName?.value || "").trim().slice(0, 12);
+      state.name = name || "指挥官";
+      state.avatar = pendingAvatar || "owl";
+      saveState();
+      setTopbar();
+      renderProfile();
+      toast("账号信息已保存");
+    });
+    renderProfile();
 
     document.addEventListener("click", (e) => {
       const t = e.target;
@@ -889,6 +1459,7 @@
 
       savePrefs(prefs);
       applyPrefs(prefs);
+      setTopbar();
     });
   </script>
 </body>
