@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" fill="none">
+  <defs>
+    <radialGradient id="bgGlow" cx="50%" cy="42%" r="62%">
+      <stop offset="0%" stop-color="#FFF7E8" stop-opacity="1"/>
+      <stop offset="55%" stop-color="#FFE8F1" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#EAF4FF" stop-opacity="0.9"/>
+    </radialGradient>
+
+    <linearGradient id="furMain" x1="290" y1="240" x2="760" y2="820" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#F4B07A"/>
+      <stop offset="55%" stop-color="#E7935B"/>
+      <stop offset="100%" stop-color="#D77B46"/>
+    </linearGradient>
+
+    <linearGradient id="furLight" x1="370" y1="410" x2="640" y2="840" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FFE7CC"/>
+      <stop offset="100%" stop-color="#F7CFA9"/>
+    </linearGradient>
+
+    <linearGradient id="earInner" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FFB9C7"/>
+      <stop offset="100%" stop-color="#FF8FA6"/>
+    </linearGradient>
+
+    <filter id="softShadow" x="-30%" y="-30%" width="160%" height="160%" color-interpolation-filters="sRGB">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="18" result="blur"/>
+      <feOffset dy="12" result="off"/>
+      <feColorMatrix in="off" type="matrix"
+        values="0 0 0 0 0
+                0 0 0 0 0
+                0 0 0 0 0
+                0 0 0 .18 0" result="shadow"/>
+      <feMerge>
+        <feMergeNode in="shadow"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <filter id="eyeShine" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="1.5" result="b"/>
+      <feMerge>
+        <feMergeNode in="b"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Soft background glow (transparent outside) -->
+  <rect x="0" y="0" width="1024" height="1024" fill="url(#bgGlow)"/>
+
+  <!-- Floating sparkles -->
+  <g opacity="0.35">
+    <circle cx="210" cy="250" r="8" fill="#FFFFFF"/>
+    <circle cx="240" cy="290" r="5" fill="#FFFFFF"/>
+    <circle cx="780" cy="260" r="7" fill="#FFFFFF"/>
+    <circle cx="820" cy="305" r="4" fill="#FFFFFF"/>
+    <circle cx="745" cy="790" r="6" fill="#FFFFFF"/>
+    <circle cx="260" cy="760" r="6" fill="#FFFFFF"/>
+  </g>
+
+  <!-- Ground shadow -->
+  <ellipse cx="512" cy="820" rx="260" ry="64" fill="#2B2B2B" opacity="0.08"/>
+
+  <!-- Cute original animal (cozy forest critter) -->
+  <g filter="url(#softShadow)">
+    <!-- Tail -->
+    <g transform="translate(0,0)">
+      <path d="M820 630c40 48 56 106 22 156-30 44-92 64-150 46-64-20-92-80-72-136 18-50 84-84 140-84 26 0 46 6 60 18z"
+            fill="url(#furMain)"/>
+      <path d="M780 664c22 28 30 62 12 92-18 32-60 46-98 32-40-14-58-52-44-88 12-32 52-56 86-56 18 0 32 4 44 20z"
+            fill="#FFE7CC" opacity="0.85"/>
+    </g>
+
+    <!-- Body -->
+    <path d="M312 530c0-164 92-292 236-292s236 128 236 292c0 180-112 320-276 320S312 710 312 530z"
+          fill="url(#furMain)"/>
+
+    <!-- Belly -->
+    <path d="M392 590c0-102 62-182 158-182s158 80 158 182c0 118-74 210-186 210S392 708 392 590z"
+          fill="url(#furLight)"/>
+
+    <!-- Ears -->
+    <g>
+      <path d="M378 346c-34-44-44-98-12-132 34-36 96-20 136 22 30 32 34 78 10 116-8 12-20 22-34 28-36 14-74 0-100-34z"
+            fill="url(#furMain)"/>
+      <path d="M392 340c-18-28-22-60-6-80 18-22 56-12 82 16 18 20 20 48 6 70-6 10-14 16-22 20-22 10-44 0-60-26z"
+            fill="url(#earInner)" opacity="0.9"/>
+
+      <path d="M646 380c-14-38-6-82 22-106 36-30 92-6 120 38 22 34 14 74-10 98-10 10-22 18-36 22-36 10-76-10-96-52z"
+            fill="url(#furMain)"/>
+      <path d="M664 386c-8-22-2-48 14-62 22-18 56-2 72 24 12 20 8 44-6 58-6 6-14 10-22 12-22 6-46-6-58-32z"
+            fill="url(#earInner)" opacity="0.9"/>
+    </g>
+
+    <!-- Face patch -->
+    <path d="M370 520c24-108 102-186 204-186s180 78 204 186c-52 72-124 108-204 108s-152-36-204-108z"
+          fill="#FFDCC0" opacity="0.85"/>
+
+    <!-- Eyes -->
+    <g>
+      <ellipse cx="452" cy="516" rx="46" ry="58" fill="#1F2430"/>
+      <ellipse cx="646" cy="516" rx="46" ry="58" fill="#1F2430"/>
+      <g filter="url(#eyeShine)">
+        <circle cx="432" cy="498" r="14" fill="#FFFFFF" opacity="0.95"/>
+        <circle cx="626" cy="498" r="14" fill="#FFFFFF" opacity="0.95"/>
+        <circle cx="448" cy="534" r="6" fill="#BDE6FF" opacity="0.9"/>
+        <circle cx="642" cy="534" r="6" fill="#BDE6FF" opacity="0.9"/>
+      </g>
+      <!-- Eyebrows -->
+      <path d="M402 458c26-22 56-32 90-26" stroke="#C87445" stroke-width="14" stroke-linecap="round" opacity="0.65"/>
+      <path d="M712 458c-26-22-56-32-90-26" stroke="#C87445" stroke-width="14" stroke-linecap="round" opacity="0.65"/>
+    </g>
+
+    <!-- Nose + mouth -->
+    <g>
+      <path d="M512 560c24 0 44 16 44 36s-20 34-44 34-44-14-44-34 20-36 44-36z" fill="#3B2B2B" opacity="0.9"/>
+      <path d="M512 630c0 0-30 18-58 2" stroke="#3B2B2B" stroke-width="12" stroke-linecap="round" opacity="0.8"/>
+      <path d="M512 630c0 0 30 18 58 2" stroke="#3B2B2B" stroke-width="12" stroke-linecap="round" opacity="0.8"/>
+      <circle cx="494" cy="592" r="6" fill="#FFFFFF" opacity="0.35"/>
+    </g>
+
+    <!-- Cheeks -->
+    <g opacity="0.28">
+      <ellipse cx="402" cy="610" rx="52" ry="34" fill="#FF7FA0"/>
+      <ellipse cx="622" cy="610" rx="52" ry="34" fill="#FF7FA0"/>
+    </g>
+
+    <!-- Paws -->
+    <g>
+      <path d="M354 684c-34 22-52 56-38 86 16 34 60 46 96 30 36-16 50-56 34-86-16-28-54-44-92-30z"
+            fill="url(#furMain)"/>
+      <path d="M670 684c34 22 52 56 38 86-16 34-60 46-96 30-36-16-50-56-34-86 16-28 54-44 92-30z"
+            fill="url(#furMain)"/>
+      <g opacity="0.75">
+        <circle cx="370" cy="758" r="10" fill="#5A3A2B"/>
+        <circle cx="410" cy="774" r="10" fill="#5A3A2B"/>
+        <circle cx="452" cy="758" r="10" fill="#5A3A2B"/>
+        <circle cx="654" cy="758" r="10" fill="#5A3A2B"/>
+        <circle cx="614" cy="774" r="10" fill="#5A3A2B"/>
+        <circle cx="572" cy="758" r="10" fill="#5A3A2B"/>
+      </g>
+    </g>
+
+    <!-- Small leaf accessory (original) -->
+    <g transform="translate(0,0)">
+      <path d="M720 416c42-40 98-46 128-16-30 36-84 68-136 68-10 0-18-2-26-6 8-18 18-32 34-46z"
+            fill="#6EDB8C" opacity="0.9"/>
+      <path d="M704 456c44-14 92-42 126-72" stroke="#2F9B52" stroke-width="10" stroke-linecap="round" opacity="0.75"/>
+    </g>
+  </g>
+
+  <!-- Subtle vignette to center attention -->
+  <rect x="0" y="0" width="1024" height="1024" fill="#000000" opacity="0.06"/>
+</svg>
